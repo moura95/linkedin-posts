@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: postgres-serverless
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: tickets_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - serverless-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  localstack:
+    container_name: localstack-serverless
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=lambda,apigateway,s3,iam
+      - DEBUG=1
+      - LAMBDA_EXECUTOR=docker
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOST_TMP_FOLDER=/tmp/localstack_custom
+      - TMPDIR=/tmp/localstack_custom
+    volumes:
+      - localstack_data:/tmp/localstack_custom
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - serverless-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+networks:
+  serverless-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  localstack_data:
