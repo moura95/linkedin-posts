@@ -1,0 +1,391 @@
+definitions:
+  api.categoryResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      parent_id:
+        type: integer
+    type: object
+  api.createCategoryRequest:
+    properties:
+      name:
+        type: string
+      parent_id:
+        type: integer
+    required:
+    - name
+    type: object
+  api.createTicketRequest:
+    properties:
+      category_id:
+        type: integer
+      description:
+        type: string
+      severity_id:
+        maximum: 4
+        minimum: 1
+        type: integer
+      subcategory_id:
+        type: integer
+      title:
+        type: string
+    required:
+    - category_id
+    - description
+    - title
+    type: object
+  api.listTicketResponse:
+    properties:
+      category_id:
+        type: integer
+      completed_at:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      severity_id:
+        type: integer
+      status:
+        type: string
+      subcategory_id:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  api.ticketResponse:
+    properties:
+      category:
+        $ref: '#/definitions/api.categoryResponse'
+      category_id:
+        type: integer
+      completed_at:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      severity_id:
+        type: integer
+      status:
+        type: string
+      subcategory:
+        $ref: '#/definitions/api.categoryResponse'
+      subcategory_id:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/jsonplaceholder.User'
+      user_id:
+        type: integer
+    type: object
+  api.updateCategoryRequest:
+    properties:
+      name:
+        type: string
+      parent_id:
+        type: integer
+    type: object
+  api.updateTicketRequest:
+    properties:
+      category_id:
+        type: integer
+      description:
+        type: string
+      severity_id:
+        type: integer
+      status:
+        type: string
+      subcategory_id:
+        type: integer
+      title:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  jsonplaceholder.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /categories:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api.categoryResponse'
+            type: array
+      summary: List all Categories
+      tags:
+      - categories
+    post:
+      consumes:
+      - application/json
+      description: Add a new Category
+      parameters:
+      - description: Category
+        in: body
+        name: receiver
+        required: true
+        schema:
+          $ref: '#/definitions/api.createCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/api.categoryResponse'
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Add a new Category
+      tags:
+      - categories
+  /categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete with the given ID
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: delete a category by ID
+      tags:
+      - categories
+    get:
+      consumes:
+      - application/json
+      description: Get details of a ticket by its ID
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.categoryResponse'
+      summary: Get a category by id
+      tags:
+      - categories
+    patch:
+      consumes:
+      - application/json
+      description: Update a category with the given ID
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Category
+        in: body
+        name: receiver
+        required: true
+        schema:
+          $ref: '#/definitions/api.updateCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Update a category
+      tags:
+      - categories
+  /tickets:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all tickets
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api.listTicketResponse'
+            type: array
+      summary: List all Tickets
+      tags:
+      - tickets
+    post:
+      consumes:
+      - application/json
+      description: Add a new ticket
+      parameters:
+      - description: Ticket
+        in: body
+        name: receiver
+        required: true
+        schema:
+          $ref: '#/definitions/api.createTicketRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/api.ticketResponse'
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Add a new Ticket
+      tags:
+      - tickets
+  /tickets/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete with the given ID
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: delete a ticket by ID
+      tags:
+      - tickets
+    get:
+      consumes:
+      - application/json
+      description: Get details of a ticket by its ID
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.ticketResponse'
+      summary: Get a ticket by id
+      tags:
+      - tickets
+    patch:
+      consumes:
+      - application/json
+      description: Update a ticket with the given ID
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Ticket
+        in: body
+        name: receiver
+        required: true
+        schema:
+          $ref: '#/definitions/api.updateTicketRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Update a ticket
+      tags:
+      - tickets
+swagger: "2.0"
